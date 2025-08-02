@@ -6,6 +6,7 @@ import sys
 # Importa funções do arquivo de backend
 sys.path.append('.')
 from update_data import coletar_links, baixar_arquivos, processar_arquivos, analisar_e_salvar
+
 @st.cache_data
 def update_and_load_data():
     try:
@@ -74,4 +75,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
