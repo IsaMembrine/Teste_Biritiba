@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import sys
-st.write("Secrets disponíveis:", st.secrets)
+
 # Importa funções do arquivo de backend
 sys.path.append('.')
 from update_data import coletar_links, baixar_arquivos, processar_arquivos, analisar_e_salvar
