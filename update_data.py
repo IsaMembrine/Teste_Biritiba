@@ -6,20 +6,16 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from datetime import datetime
-
-# Autenticação via secrets ou env
 import streamlit as st
-
-auth = (
-    st.secrets["GATEWAY_USERNAME"],
-    st.secrets["GATEWAY_PASSWORD"]
-)
-
 
 base_url = 'https://loadsensing.wocs3.com'
 urls = [f'{base_url}/27920/dataserver/node/view/{nid}' for nid in [1006, 1007, 1008, 1010, 1011, 1012]]
 
-def coletar_links():   
+def coletar_links():
+    auth = (
+        st.secrets["GATEWAY_USERNAME"],
+        st.secrets["GATEWAY_PASSWORD"]
+    )
     all_file_links = {}
     for url in urls:
         try:
@@ -32,8 +28,12 @@ def coletar_links():
         except Exception as e:
             print(f"Erro em {url}: {e}")
     return all_file_links
-             
+
 def baixar_arquivos(all_file_links):
+    auth = (
+        st.secrets["GATEWAY_USERNAME"],
+        st.secrets["GATEWAY_PASSWORD"]
+    )
     hoje = datetime.now()
     limite_data = hoje.replace(day=1)
     meses = [(limite_data.year, limite_data.month)]
@@ -133,20 +133,4 @@ def analisar_e_salvar(all_dataframes):
     df_cleaned.drop_duplicates(subset=['Date', 'Time_Rounded'], inplace=True)
     p_cols = [c for c in df_cleaned.columns if c.startswith('p-')]
     df_selected = df_cleaned[['Date-and-time', 'Time_Rounded'] + p_cols].copy()
-    melted = df_selected.melt(id_vars=['Date-and-time', 'Time_Rounded'], value_vars=p_cols,
-                              var_name='Node_p_Column', value_name='Value')
-    melted.dropna(subset=['Value'], inplace=True)
-    melted['Month'] = melted['Date-and-time'].dt.to_period('M')
-    melted['Node_ID'] = melted['Node_p_Column'].apply(lambda x: x.split('-')[1])
-    counts = melted.groupby(['Month', 'Node_ID']).size().reset_index(name='Monthly_Data_Count')
-    counts['Days_in_Month'] = counts['Month'].dt.days_in_month
-    counts['Max_Data'] = counts['Days_in_Month'] * 24
-    counts['Monthly_Attendance_Percentage'] = (counts['Monthly_Data_Count'] / counts['Max_Data']) * 100
-    monthy_selecionado = counts[['Month', 'Node_ID', 'Monthly_Attendance_Percentage']].copy()
-    monthy_selecionado['Month'] = monthy_selecionado['Month'].astype(str)
-
-    df_corr_real = calcular_correlacao_mensal(todos_nos)
-
-    return monthy_selecionado, df_corr_real
-
-
+    melted = df
